@@ -1,0 +1,12 @@
+src/
+scripts/
+coverage/
+*.spec.ts
+*.test.ts
+tsconfig.json
+vite.config.js
+.gitignore
+.git/
+icon.svg
+DESIGN.md
+builtin/

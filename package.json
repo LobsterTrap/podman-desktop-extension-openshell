@@ -1,0 +1,225 @@
+{
+  "name": "openshell",
+  "displayName": "OpenShell",
+  "description": "Manage OpenShell gateways, sandboxes, and providers — sandboxed AI agent execution environments with policy-enforced security",
+  "version": "0.1.0",
+  "icon": "icon.png",
+  "publisher": "lobstertrap",
+  "license": "Apache-2.0",
+  "engines": {
+    "podman-desktop": "^0.0.1"
+  },
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "openshell.gateway.start",
+        "title": "OpenShell: Start Gateway"
+      },
+      {
+        "command": "openshell.gateway.stop",
+        "title": "OpenShell: Stop Gateway"
+      },
+      {
+        "command": "openshell.gateway.destroy",
+        "title": "OpenShell: Destroy Gateway"
+      },
+      {
+        "command": "openshell.gateway.select",
+        "title": "OpenShell: Select Gateway"
+      },
+      {
+        "command": "openshell.gateway.info",
+        "title": "OpenShell: Gateway Info"
+      },
+      {
+        "command": "openshell.gateway.add",
+        "title": "OpenShell: Add Gateway"
+      },
+      {
+        "command": "openshell.sandbox.create",
+        "title": "OpenShell: Create Sandbox"
+      },
+      {
+        "command": "openshell.sandbox.delete",
+        "title": "OpenShell: Delete Sandbox"
+      },
+      {
+        "command": "openshell.sandbox.connect",
+        "title": "OpenShell: Connect to Sandbox"
+      },
+      {
+        "command": "openshell.sandbox.list",
+        "title": "OpenShell: List Sandboxes"
+      },
+      {
+        "command": "openshell.sandbox.get",
+        "title": "OpenShell: Sandbox Details"
+      },
+      {
+        "command": "openshell.sandbox.exec",
+        "title": "OpenShell: Execute in Sandbox"
+      },
+      {
+        "command": "openshell.provider.create",
+        "title": "OpenShell: Create Provider"
+      },
+      {
+        "command": "openshell.provider.delete",
+        "title": "OpenShell: Delete Provider"
+      },
+      {
+        "command": "openshell.provider.list",
+        "title": "OpenShell: List Providers"
+      },
+      {
+        "command": "openshell.provider.get",
+        "title": "OpenShell: Provider Details"
+      },
+      {
+        "command": "openshell.provider.update",
+        "title": "OpenShell: Update Provider"
+      },
+      {
+        "command": "openshell.logs",
+        "title": "OpenShell: View Logs"
+      },
+      {
+        "command": "openshell.term",
+        "title": "OpenShell: Open Terminal UI"
+      },
+      {
+        "command": "openshell.diagnostics",
+        "title": "OpenShell: Diagnostics"
+      },
+      {
+        "command": "openshell.doctor.check",
+        "title": "OpenShell: Doctor Check"
+      },
+      {
+        "command": "openshell.status",
+        "title": "OpenShell: Show Status"
+      },
+      {
+        "command": "openshell.install",
+        "title": "OpenShell: Install..."
+      }
+    ],
+    "configuration": {
+      "title": "OpenShell",
+      "properties": {
+        "openshell.binary.path": {
+          "type": "string",
+          "format": "file",
+          "default": "",
+          "description": "Custom path to openshell binary (auto-detected when blank)"
+        },
+        "openshell.gateway.name": {
+          "type": "string",
+          "default": "openshell",
+          "scope": "DEFAULT",
+          "description": "Default gateway name"
+        },
+        "openshell.gateway.port": {
+          "type": "number",
+          "default": 8080,
+          "scope": "DEFAULT",
+          "description": "Default gateway port"
+        },
+        "openshell.gateway.gpu": {
+          "type": "boolean",
+          "default": false,
+          "scope": "DEFAULT",
+          "description": "Enable NVIDIA GPU passthrough for gateways"
+        },
+        "openshell.sandbox.defaultAgent": {
+          "type": "string",
+          "default": "",
+          "enum": ["", "claude", "opencode", "codex", "copilot"],
+          "description": "Default agent to launch with sandbox create"
+        },
+        "openshell.logs.defaultLines": {
+          "type": "number",
+          "default": 200,
+          "description": "Default number of log lines to fetch"
+        },
+        "openshell.diagnostics.autoRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically run doctor check on gateway start"
+        },
+        "openshell.tui.theme": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "dark", "light"],
+          "description": "Color theme for the OpenShell TUI"
+        }
+      }
+    },
+    "menus": {
+      "dashboard/container": [
+        {
+          "command": "openshell.sandbox.connect",
+          "title": "Connect to OpenShell Sandbox",
+          "when": "containerImageName =~ /openshell/"
+        }
+      ]
+    },
+    "onboarding": {
+      "title": "OpenShell Setup",
+      "enablement": "!openshell.cliInstalled",
+      "steps": [
+        {
+          "id": "checkInstalled",
+          "label": "Check OpenShell",
+          "title": "Checking for OpenShell installation",
+          "command": "openshell.onboarding.checkInstalled",
+          "completionEvents": ["onCommand:openshell.onboarding.checkInstalled"]
+        },
+        {
+          "id": "installPrompt",
+          "title": "Install OpenShell",
+          "when": "!openshell.cliInstalled",
+          "content": [
+            [
+              {
+                "value": "OpenShell is not installed. Install it to manage sandboxed AI agent environments.\n\n:button[Install OpenShell]{command=openshell.install}"
+              }
+            ]
+          ]
+        },
+        {
+          "id": "installed",
+          "title": "OpenShell installed",
+          "when": "openshell.cliInstalled",
+          "state": "completed",
+          "content": [
+            [
+              {
+                "value": "#### OpenShell is ready!\n\nStart a gateway and create your first sandbox:\n\n1. Run **OpenShell: Start Gateway** from the command palette\n2. Run **OpenShell: Create Sandbox** to launch an AI agent\n\nOr use the OpenShell provider card on the Dashboard.",
+                "highlight": true
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "vite build && node ./scripts/build.js",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest watch --coverage",
+    "watch": "vite build -w"
+  },
+  "dependencies": {
+    "@podman-desktop/api": "^1.0.0",
+    "ssh2": "^1.17.0"
+  },
+  "devDependencies": {
+    "@types/ssh2": "^1.15.5",
+    "adm-zip": "^0.5.17",
+    "mkdirp": "^3.0.1",
+    "vite": "^7.3.2",
+    "vitest": "^4.1.3"
+  }
+}
